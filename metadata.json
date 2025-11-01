@@ -1,0 +1,5 @@
+{
+  "name": "Copy of xPhy",
+  "description": "A React application that visualizes JSON data containing subject-predicate-object triplets as a mind map or graph using React Flow and Dagre for automatic layout.",
+  "requestFramePermissions": []
+}
