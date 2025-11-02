@@ -50,8 +50,8 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({ file, highlightText }) => 
       if (textLayer) {
         const spans = textLayer.querySelectorAll('span');
         spans.forEach(span => {
-          if (span.style.backgroundColor) {
-             span.style.backgroundColor = 'transparent';
+          if ((span as HTMLElement).style.backgroundColor) {
+             (span as HTMLElement).style.backgroundColor = 'transparent';
           }
         });
       }
@@ -73,7 +73,7 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({ file, highlightText }) => 
       const textSpans = Array.from(textLayer.querySelectorAll('span'));
       if (textSpans.length === 0) return;
       
-      const pageTextContent = textSpans.map(span => span.textContent || '').join('');
+      const pageTextContent = textSpans.map(span => (span as HTMLElement).textContent || '').join('');
       const normalizedPageText = normalizeTextForComparison(pageTextContent);
       const normalizedQuery = normalizeTextForComparison(highlightText);
 
@@ -87,16 +87,16 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({ file, highlightText }) => 
       let firstMatchSpan: HTMLSpanElement | null = null;
       
       textSpans.forEach(span => {
-          const spanText = span.textContent || '';
+          const spanText = (span as HTMLElement).textContent || '';
           const normalizedSpanText = normalizeTextForComparison(spanText);
           const spanStart = accumulatedLen;
           const spanEnd = accumulatedLen + normalizedSpanText.length;
 
           // Check if the current span overlaps with the matched text range
           if (Math.max(spanStart, matchIndex) < Math.min(spanEnd, matchEndIndex)) {
-              span.style.backgroundColor = 'rgba(255, 255, 0, 0.4)';
+              (span as HTMLElement).style.backgroundColor = 'rgba(255, 255, 0, 0.4)';
               if (!firstMatchSpan) {
-                  firstMatchSpan = span;
+                  firstMatchSpan = span as HTMLSpanElement;
               }
           }
           accumulatedLen = spanEnd;
