@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useCallback, useEffect } from 'react';
-import { pt, en } from './locales';
+import { pt, en } from '../locales';
 
 const resources = {
   pt,
