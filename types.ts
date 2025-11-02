@@ -80,7 +80,7 @@ export interface GraphEdge {
 }
 
 export interface GraphResult {
-    title: string;
+    title?: string;
     nodes: GraphNode[];
     edges: GraphEdge[];
 }
@@ -106,6 +106,7 @@ export interface CajalEvent {
   hasEvidence: string;
   confidenceScore: number;
   supportingQuote: string;
+  source_lines?: string;
 }
 
 export type CajalData = CajalEvent[];

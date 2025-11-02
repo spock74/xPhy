@@ -100,15 +100,16 @@ const nodeTypes = {
 };
 
 const HamburgerIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <line x1="3" y1="12" x2="21" y2="12"></line>
     <line x1="3" y1="6" x2="21" y2="6"></line>
     <line x1="3" y1="18" x2="21" y2="18"></line>
   </svg>
 );
 
+
 const CloseIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <line x1="18" y1="6" x2="6" y2="18"></line>
     <line x1="6" y1="6" x2="18" y2="18"></line>
   </svg>
@@ -339,7 +340,7 @@ const USFlagIcon: React.FC = () => (
 );
 
 const ChevronDownIcon = ({ isOpen }: { isOpen: boolean }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
       className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
       aria-hidden="true"
     >
@@ -347,13 +348,14 @@ const ChevronDownIcon = ({ isOpen }: { isOpen: boolean }) => (
     </svg>
 );
 
+
 const ChevronLeftIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <polyline points="15 18 9 12 15 6"></polyline>
     </svg>
 );
 const ChevronRightIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
 );
@@ -462,12 +464,12 @@ function App() {
   const toggleLanguage = () => setLanguage(language === 'pt' ? 'en' : 'pt');
 
   const generateJsonFromText = useCallback(async (finalPrompt: string, selectedModel: string, isFlexible: boolean): Promise<string> => {
-    if (!process.env.API_KEY) {
-        throw new Error("API key is missing. Please ensure it is set in your environment variables.");
+    if (!import.meta.env.VITE_API_KEY) {
+        throw new Error("API key is missing. Please ensure it is set as VITE_API_KEY in your environment variables.");
     }
     
     const { GoogleGenAI } = await import('@google/genai');
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
 
     const config = isFlexible ? {} : { responseMimeType: "application/json" as const };
 
@@ -808,7 +810,7 @@ function App() {
                     label: agent.label,
                     type: 'agent',
                     source_quote: event.supportingQuote,
-                    source_lines: 'N/A', // Not available in this format
+                    source_lines: event.source_lines || 'N/A',
                 },
                 position: { x: 0, y: 0 },
             });
@@ -822,7 +824,7 @@ function App() {
                     label: affected.label,
                     type: 'affectedEntity',
                     source_quote: event.supportingQuote,
-                    source_lines: 'N/A',
+                    source_lines: event.source_lines || 'N/A',
                 },
                 position: { x: 0, y: 0 },
             });
@@ -908,15 +910,20 @@ function App() {
 
       if (!processed) {
         if ('result' in parsedJson) {
+
           const nodeIds = new Set(parsedJson.result.nodes.map((n: {id: string}) => n.id));
           parsedJson.result.edges = parsedJson.result.edges.filter((e: {source: string, target: string}) =>
               e.source && e.target && nodeIds.has(e.source) && nodeIds.has(e.target)
           );
-          const graphData: GraphJsonData = GraphJsonDataSchema.parse(parsedJson);
+          // Add a default title if it's missing
+          if (!parsedJson.result.title) {
+            parsedJson.result.title = 'Generated Graph';
+          }
+          const graphData = GraphJsonDataSchema.parse(parsedJson);
           const { nodes, edges } = processGraphData(graphData);
           setGraphElements({ nodes, edges });
         } else if ('kb' in parsedJson) {
-          const kbData: KnowledgeBaseJsonData = KnowledgeBaseJsonDataSchema.parse(parsedJson);
+          const kbData: any = KnowledgeBaseJsonDataSchema.parse(parsedJson);
           const tripletData = transformKbToTriplets(kbData);
           const { nodes, edges } = processTriplets(tripletData);
           setGraphElements({ nodes, edges });
@@ -1636,7 +1643,7 @@ function App() {
                       <div className="flex justify-between items-center mb-4 flex-shrink-0">
                           <h2 className="text-lg font-bold text-cyan-400">{t('traceabilityDrawerTitle')}</h2>
                           <button onClick={() => { setActiveTrace(null); setIsTraceInfoPanelOpen(false); }} className="text-gray-400 hover:text-white" aria-label="Close">
-                               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                           </button>
                       </div>
                       <div className="flex-shrink-0">

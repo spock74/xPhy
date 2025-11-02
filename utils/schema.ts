@@ -110,8 +110,11 @@ export const GraphEdgeSchema = z.object({
 
 export const GraphJsonDataSchema = z.object({
     result: z.object({
-        title: z.string(),
-        nodes: z.array(GraphNodeSchema),
+        title: z.string().optional(),
+        nodes: z.preprocess(
+            (nodes) => Array.isArray(nodes) ? nodes.filter(n => n && n.id && n.label) : [],
+            z.array(GraphNodeSchema)
+        ),
         edges: z.array(GraphEdgeSchema),
     }),
 });
@@ -132,6 +135,7 @@ export const CajalEventSchema = z.object({
   hasEvidence: z.string(),
   confidenceScore: z.number().min(0).max(1),
   supportingQuote: z.string(),
+  source_lines: z.string().optional(),
 });
 
 export const CajalDataSchema = z.array(CajalEventSchema);

@@ -12,7 +12,7 @@ import { pdfjs } from 'react-pdf';
 
 // Defina o caminho para o worker usando a mesma CDN e versão
 // que você está usando para as outras bibliotecas no seu importmap.
-pdfjs.GlobalWorkerOptions.workerSrc = 'https://aistudiocdn.com/pdfjs-dist@4.0.379/build/pdf.worker.mjs';
+pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.mjs`;
 // ======================================================================
 
 

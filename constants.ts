@@ -320,7 +320,8 @@ Você possui domínio profundo em ontologias, modelagem semântica, taxonomia e 
     
     "confidenceScore": "Sua confiança (Float de 0.0 a 1.0) de que a extração reflete acuradamente as afirmações do artigo.",
     
-    "supportingQuote": "A frase ou sentença exata do texto que suporta esta extração."
+    "supportingQuote": "A frase ou sentença exata do texto que suporta esta extração.",
+    "source_lines": "Uma string indicando os números de linha exatos de onde a citação foi extraída (ex: 'Linhas: 42-45')."
   }
 ]
 \`\`\`
